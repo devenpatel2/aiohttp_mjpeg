@@ -1,0 +1,61 @@
+import logging
+import os
+import aiohttp
+from aiohttp import web, MultipartWriter
+
+logging.basicConfig()
+log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+logger = logging.getLogger("server")
+log_level = getattr(logging, log_level)
+logger.setLevel(log_level)
+
+
+class StreamHandler:
+
+    def __init__(self, cam):
+        self._cam = cam
+
+    async def __call__(self, request):
+        my_boundary = 'image-boundary'
+        response = web.StreamResponse(
+            status=200,
+            reason='OK',
+            headers={
+                'Content-Type': 'multipart/x-mixed-replace;boundary={}'.format(my_boundary)
+            }
+        )
+        await response.prepare(request)
+        while True:
+            frame = self._cam.get_frame()
+            with MultipartWriter('image/jpeg', boundary=my_boundary) as mpwriter:
+                mpwriter.append(frame, {
+                    'Content-Type': 'image/jpeg'
+                })
+                await mpwriter.write(response, close_boundary=False)
+            await response.write(b"\r\n")
+
+
+class MjpegServer:
+
+    def __init__(self):
+        self._app = web.Application()
+        self._cam_routes = []
+
+    async def root_handler(self, request):
+        # TO-DO : load page with links
+        text = 'Available streams:\n\n'
+        for route in self._cam_routes:
+            text += f"{route} \n"
+        return aiohttp.web.Response(text=text)
+
+    def add_route(self, route, cam):
+        route = f"/{route}"
+        self._cam_routes.append(route)
+        self._app.router.add_route("GET", f"{route}", StreamHandler(cam))
+
+    def start(self):
+        self._app.router.add_route("GET", "/", self.root_handler)
+        web.run_app(self._app)
+
+    def stop(self):
+        pass
