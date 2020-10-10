@@ -9,7 +9,7 @@ This repo implements a very simple mjpeg server for streaming from one or multip
  server = MjpegServer(host, port)
  # default host - 0.0.0.0
  # defaul port = 8080
- server.add_route("cam_route", Camera())
+ server.add_stream("cam_route", Camera())
  server.start()
  ```
  The class ```Camera``` should have a ```get_frame``` method which returns the encoded jpeg. An example can be seen in ```main.py```. Once the server is running, the stream can be accessed at ```http://localhost:8080/cam_route```

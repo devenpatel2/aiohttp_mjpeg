@@ -50,9 +50,10 @@ class MjpegServer:
             text += f"{route} \n"
         return aiohttp.web.Response(text=text)
 
-    def add_route(self, route, cam):
+    def add_stream(self, route, cam):
         route = f"/{route}"
         self._cam_routes.append(route)
+        assert hasattr(cam, 'get_frame'), "arg 'cam' should have a 'get_frame' method"
         self._app.router.add_route("GET", f"{route}", StreamHandler(cam))
 
     def start(self):

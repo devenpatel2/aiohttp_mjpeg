@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     for route, cam in cams.items():
         # add routes
-        server.add_route(route, cam)
+        server.add_stream(route, cam)
 
     try:
         # start server
