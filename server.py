@@ -37,7 +37,9 @@ class StreamHandler:
 
 class MjpegServer:
 
-    def __init__(self):
+    def __init__(self, host='0.0.0.0', port='8080'):
+        self._port = port
+        self._host = host
         self._app = web.Application()
         self._cam_routes = []
 
@@ -55,7 +57,11 @@ class MjpegServer:
 
     def start(self):
         self._app.router.add_route("GET", "/", self.root_handler)
-        web.run_app(self._app)
+        web.run_app(self._app, host=self._host, port=self._port)
 
     def stop(self):
+        '''
+        dummy method
+        actions to be take on closing can be added here
+        '''
         pass
