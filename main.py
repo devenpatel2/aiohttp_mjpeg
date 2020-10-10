@@ -27,8 +27,8 @@ class Camera:
     # The camera class should contain a "get_frame" method
     def get_frame(self):
         '''
-            method to get frames
-            It returns the encoded jpeg image
+        Method to get frames. It returns the encoded jpeg image
+        The camera class should have this "get_frame" method
         '''
         frame = np.ones([128, 128, 3], dtype=np.uint8) + \
             np.random.randint(0, 255)
@@ -37,6 +37,9 @@ class Camera:
         return frame.tobytes()
 
     def stop(self):
+        '''
+        dummy method
+        '''
         pass
 
 
