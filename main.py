@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import time
@@ -25,7 +26,7 @@ class Camera:
         return self._idx
 
     # The camera class should contain a "get_frame" method
-    def get_frame(self):
+    async def get_frame(self):
         '''
         Method to get frames. It returns the encoded jpeg image
         The camera class should have this "get_frame" method
@@ -33,7 +34,7 @@ class Camera:
         frame = np.ones([128, 128, 3], dtype=np.uint8) + \
             np.random.randint(0, 255)
         frame = cv2.imencode('.jpg', frame)[1]
-        time.sleep(1 / 25)
+        await asyncio.sleep(1 / 25)
         return frame.tobytes()
 
     def stop(self):

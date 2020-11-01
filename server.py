@@ -26,12 +26,16 @@ class StreamHandler:
         )
         await response.prepare(request)
         while True:
-            frame = self._cam.get_frame()
+            frame = await self._cam.get_frame()
             with MultipartWriter('image/jpeg', boundary=my_boundary) as mpwriter:
                 mpwriter.append(frame, {
                     'Content-Type': 'image/jpeg'
                 })
-                await mpwriter.write(response, close_boundary=False)
+                try:
+                    await mpwriter.write(response, close_boundary=False)
+                except ConnectionResetError :
+                    logger.warning("Client connection closed")
+                    break
             await response.write(b"\r\n")
 
 
